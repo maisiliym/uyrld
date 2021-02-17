@@ -1,20 +1,21 @@
 {
   description = "Uyrld";
 
-  outputs = flakes@{ self, kor, hob, pkgs, nixpkgs-mozilla, hyraizyn }:
+  outputs = registry@{ self, kor, hob, pkgs, nixpkgs-mozilla, hyraizyn }:
     let
       meik = { lamdy, modz ? [ ] }:
         let
+          kor = registry.kor.datom;
           inherit (kor) optionalAttr elem genAttrs;
 
-          hyraizyn = flakes.hyraizyn.datom;
-          krimyn = flakes.hyraizyn.krimyn;
+          hyraizyn = registry.hyraizyn.datom;
+          krimyn = registry.hyraizyn.krimyn;
 
-          pkgs = flakes.pkgs.meik {
+          pkgs = registry.pkgs.meik {
             localSystem = hyraizyn.astra.sistym;
           };
 
-          mozPkgs = flakes.pkgs.meik {
+          mozPkgs = registry.pkgs.meik {
             overlays = [ (import (nixpkgs-mozilla + /rust-overlay.nix)) ];
             localSystem = hyraizyn.astra.sistym;
           };
