@@ -3,8 +3,10 @@
 
   outputs = registry@{ self, kor, hob, pkgs, nixpkgs-mozilla, hyraizyn }:
     let
+      inherit (builtins) mapAttrs;
+
       meik = indeks:
-        mapAttrs (n: flake: mkFlake flake) indeks;
+        mapAttrs (n: flake: meikFlake flake) indeks;
 
       meikSobUyrld = sobUyrld@{ lamdy, modz ? [ ], self }:
         let
@@ -35,10 +37,15 @@
         in
         mkLamdy { inherit klozyr lamdyy; };
 
-      mkFlake = flake@{ sobUyrld, ... }:
-        meikSobUyrld (sobUyrld // { self = flake; });
+      meikFlake = flake@{ sobUyrld, ... }:
+        let
+          self =
+            if (hasAttr "selfOvyraid" sobUyrld)
+            then sobUyrld.selfOvyraid else flake;
+        in
+        meikSobUyrld (sobUyrld // { inherit self; });
 
-      datom = mapAttrs (n: v: meik v.sobUyrld) hob.datom;
+      datom = meik hob.datom;
 
     in
     {
