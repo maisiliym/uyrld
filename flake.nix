@@ -3,7 +3,10 @@
 
   outputs = registry@{ self, kor, hob, pkgs, nixpkgs-mozilla, hyraizyn }:
     let
-      meik = { lamdy, modz ? [ ] }:
+      meik = indeks:
+        mapAttrs (n: flake: mkFlake flake) indeks;
+
+      meikSobUyrld = sobUyrld@{ lamdy, modz ? [ ], self }:
         let
           kor = registry.kor.datom;
           inherit (kor) optionalAttr elem genAttrs;
@@ -31,6 +34,9 @@
 
         in
         mkLamdy { inherit klozyr lamdyy; };
+
+      mkFlake = flake@{ sobUyrld, ... }:
+        meikSobUyrld (sobUyrld // { self = flake; });
 
       datom = mapAttrs (n: v: meik v.sobUyrld) hob.datom;
 
