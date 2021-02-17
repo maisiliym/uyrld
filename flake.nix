@@ -1,41 +1,38 @@
 {
   description = "Uyrld";
 
-  outputs = registry@{ self, kor, hob, pkgs, nixpkgs-mozilla, hyraizyn }:
+  outputs = registry@{ self, kor, lib, hob, hyraizyn }:
     let
-      inherit (builtins) mapAttrs;
+      inherit (builtins) hasAttr mapAttrs;
 
       meik = indeks:
         mapAttrs (n: flake: meikFlake flake) indeks;
 
       meikSobUyrld = sobUyrld@{ lamdy, modz ? [ ], self }:
         let
+          inherit (builtins) getAttr;
+
           kor = registry.kor.datom;
-          inherit (kor) optionalAttr elem genAttrs;
+          inherit (kor) mkLamdy optionalAttrs elem genAttrs;
 
           hyraizyn = registry.hyraizyn.datom;
           krimyn = registry.hyraizyn.krimyn;
 
-          pkgs = registry.pkgs.meik {
-            localSystem = hyraizyn.astra.sistym;
-          };
+          Modz = [ "kor" "lib" "pkgs" "hob" "krimyn" "hyraizyn" "mozPkgs" "uyrld" ];
+          iuzMod = genAttrs Modz (n: (elem n modz));
 
-          mozPkgs = registry.pkgs.meik {
-            overlays = [ (import (nixpkgs-mozilla + /rust-overlay.nix)) ];
-            localSystem = hyraizyn.astra.sistym;
-          };
-
-          Modz = [ "pkgs" "krimyn" "hyraizyn" "mozPkgs" "uyrld" ];
-          iuzMod = genAttrs Modz (n: (elem n Modz));
-
-          klozyr = optionalAttr iuzMod.pkgs pkgs
-            // optionalAttr iuzMod.uyrld datom
-            // optionalAttr iuzMod.mozPkgs mozPkgs
-            // optionalAttr iuzMod.hyraizyn { inherit hyraizyn; }
-            // optionalAttr iuzMod.krimyn { inherit krimyn; };
+          klozyr = { inherit self; }
+            // optionalAttrs iuzMod.pkgs datom.pkgs
+            // optionalAttrs iuzMod.hob { hob = registry.hob.datom; }
+            // optionalAttrs iuzMod.uyrld datom
+            // optionalAttrs iuzMod.mozPkgs datom.mozPkgs
+            // optionalAttrs iuzMod.lib { lib = registry.lib.datom; }
+            // optionalAttrs iuzMod.hyraizyn { inherit hyraizyn; }
+            // optionalAttrs iuzMod.kor { inherit kor; }
+            // optionalAttrs iuzMod.krimyn { inherit krimyn; };
 
         in
-        mkLamdy { inherit klozyr lamdyy; };
+        mkLamdy { inherit klozyr lamdy; };
 
       meikFlake = flake@{ sobUyrld, ... }:
         let
@@ -43,7 +40,7 @@
             if (hasAttr "selfOvyraid" sobUyrld)
             then sobUyrld.selfOvyraid else flake;
         in
-        meikSobUyrld (sobUyrld // { inherit self; });
+        meikSobUyrld ({ inherit (sobUyrld) modz lamdy; } // { inherit self; });
 
       datom = meik hob.datom;
 
