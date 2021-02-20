@@ -1,47 +1,56 @@
 {
   description = "Uyrld - intial nix/uniks interface";
 
-  outputs = registry@{ self, kor, lib, hob, hyraizyn }:
+  outputs = registry@{ self, hob, input }:
     let
       /* Bootstrap - to be moved uniks-side */
-      kor = registry.kor.datom;
-      lib = registry.lib.datom;
       hob = registry.hob.datom;
-      hyraizyn = registry.hyraizyn.datom;
-      krimyn = registry.hyraizyn.krimyn;
+      input = registry.input.datom;
 
       inherit (builtins) hasAttr mapAttrs;
+      kor = import ./kor.nix;
 
-      meikSobUyrld = sobUyrld@{ lamdy, modz, self }:
+      meikSobUyrld = SobUyrld@{ lamdy, modz, self }:
         let
-          inherit (builtins) getAttr;
-          inherit (kor) mkLamdy optionalAttrs elem genAttrs;
+          inherit (builtins) getAttr elem;
+          inherit (kor) mkLamdy optionalAttrs genAttrs;
 
           Modz = [
-            "kor"
+            "input"
             "lib"
             "pkgs"
+            "pkgsSet"
             "meikPkgs"
             "mozPkgs"
             "hob"
             "pkdjz"
+            "metastriz"
             "hyraizyn"
             "krimyn"
             "uyrld"
+            "uyrldSet"
           ];
 
           iuzMod = genAttrs Modz (n: (elem n modz));
 
-          klozyr = optionalAttrs iuzMod.kor { inherit kor; }
-            // optionalAttrs iuzMod.lib { inherit lib; }
-            // optionalAttrs iuzMod.pkgs uyrld.pkgs.datom
-            // optionalAttrs iuzMod.meikPkgs { meikPkgs = uyrld.pkgs.meik; }
-            // optionalAttrs iuzMod.mozPkgs uyrld.mozPkgs
+          pkgsSet = { pkgs = ryzylt.pkgs.datom; };
+          uyrldSet = { uyrld = ryzylt // ryzylt.pkdjz; };
+          krimyn = ryzylt.hyraizyn.${input.krimynNeim};
+
+          klozyr = optionalAttrs iuzMod.input { inherit input; }
+            // optionalAttrs iuzMod.lib { lib = ryzylt.pkgs.lib; }
+            // optionalAttrs iuzMod.pkgs ryzylt.pkgs.datom
+            // optionalAttrs iuzMod.pkdjz ryzylt.pkdjz
+            // optionalAttrs iuzMod.pkgsSet pkgsSet
+            // optionalAttrs iuzMod.meikPkgs { meikPkgs = ryzylt.pkgs.meik; }
+            // optionalAttrs iuzMod.mozPkgs ryzylt.mozPkgs
             // optionalAttrs iuzMod.hob { inherit hob; }
-            // optionalAttrs iuzMod.pkdjz { inherit (uyrld) pkdjz; }
-            // optionalAttrs iuzMod.hyraizyn { inherit hyraizyn; }
+            // optionalAttrs iuzMod.metastriz { metastriz = ryzylt.metastriz; }
+            // optionalAttrs iuzMod.hyraizyn { inherit (ryzylt) hyraizyn; }
             // optionalAttrs iuzMod.krimyn { inherit krimyn; }
-            // optionalAttrs iuzMod.uyrld uyrld
+            // optionalAttrs iuzMod.uyrld (ryzylt // ryzylt.pkdjz)
+            // optionalAttrs iuzMod.uyrldSet uyrldSet
+            // { inherit kor; }
             // { inherit self; };
 
         in
@@ -49,13 +58,13 @@
 
       meikFleik = neim: fleik@{ ... }:
         let
-          priMeikSobUyrld = neim: sobUyrld@{ modz ? [ ], lamdy, ... }:
+          priMeikSobUyrld = neim: SobUyrld@{ modz ? [ ], lamdy, ... }:
             let
               selfHob =
-                if (hasAttr "selfHob" sobUyrld && hasAttr sobUyrld.selfHob hob)
-                then hob.${sobUyrld.selfHob} else null;
+                if (hasAttr "selfHob" SobUyrld && hasAttr SobUyrld.selfHob hob)
+                then hob.${SobUyrld.selfHob} else null;
 
-              self = sobUyrld.selfOvyraid or (
+              self = SobUyrld.selfOvyraid or (
                 if (selfHob != null) then selfHob else fleik
               );
 
@@ -67,8 +76,8 @@
           meik =
             if (hasAttr "SobUyrldz" fleik)
             then mapAttrs priMeikSobUyrld fleik.SobUyrldz
-            else if (hasAttr "sobUyrld" fleik)
-            then priMeikSobUyrld neim fleik.sobUyrld
+            else if (hasAttr "SobUyrld" fleik)
+            then priMeikSobUyrld neim fleik.SobUyrld
             else fleik;
         in
         meik;
@@ -76,12 +85,12 @@
       meik = indeks:
         mapAttrs meikFleik indeks;
 
-      uyrld = meik hob;
+      ryzylt = meik hob;
 
     in
     {
       inherit meik;
-      datom = uyrld;
+      datom = ryzylt;
     };
 
 }
