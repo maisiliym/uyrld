@@ -21,6 +21,7 @@
             "kor"
             "lib"
             "pkgs"
+            "meikPkgs"
             "mozPkgs"
             "hob"
             "pkdjz"
@@ -33,7 +34,8 @@
 
           klozyr = optionalAttrs iuzMod.kor { inherit kor; }
             // optionalAttrs iuzMod.lib { inherit lib; }
-            // optionalAttrs iuzMod.pkgs uyrld.pkgs
+            // optionalAttrs iuzMod.pkgs uyrld.pkgs.datom
+            // optionalAttrs iuzMod.meikPkgs { meikPkgs = uyrld.pkgs.meik; }
             // optionalAttrs iuzMod.mozPkgs uyrld.mozPkgs
             // optionalAttrs iuzMod.hob { inherit hob; }
             // optionalAttrs iuzMod.pkdjz { inherit (uyrld) pkdjz; }
@@ -47,22 +49,26 @@
 
       meikFleik = neim: fleik@{ ... }:
         let
-          priMeikSobUyrld = sobUyrld@{ modz ? [ ], lamdy, ... }:
+          priMeikSobUyrld = neim: sobUyrld@{ modz ? [ ], lamdy, ... }:
             let
-              izSelfHob = hasAttr "selfHob" sobUyrld &&
-                hasAttr sobUyrld.selfHob hob;
-              self =
-                if izSelfHob then hob.${sobUyrld.selfHob}
-                else sobUyrld.selfOvyraid or fleik;
+              selfHob =
+                if (hasAttr "selfHob" sobUyrld && hasAttr sobUyrld.selfHob hob)
+                then hob.${sobUyrld.selfHob} else null;
+
+              self = sobUyrld.selfOvyraid or (
+                if (selfHob != null) then selfHob else fleik
+              );
+
               fainylSobuyrld = { inherit self modz lamdy; };
+
             in
             meikSobUyrld fainylSobuyrld;
 
           meik =
             if (hasAttr "SobUyrldz" fleik)
-            then mapAttrs (n: su: priMeikSobUyrld su) fleik.SobUyrldz
+            then mapAttrs priMeikSobUyrld fleik.SobUyrldz
             else if (hasAttr "sobUyrld" fleik)
-            then priMeikSobUyrld fleik.sobUyrld
+            then priMeikSobUyrld neim fleik.sobUyrld
             else fleik;
         in
         meik;
