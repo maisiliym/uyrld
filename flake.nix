@@ -1,14 +1,14 @@
 {
   description = "Uyrld - intial nix/uniks interface";
 
-  outputs = registry@{ self, hob, input }:
+  outputs = registry@{ self, kor, hob, input }:
     let
       /* Bootstrap - to be moved uniks-side */
       hob = registry.hob.datom;
       input = registry.input.datom;
 
       inherit (builtins) hasAttr mapAttrs;
-      kor = import ./kor.nix;
+      kor = registry.kor.datom;
 
       meikSobUyrld = SobUyrld@{ lamdy, modz, self }:
         let
@@ -35,7 +35,7 @@
 
           pkgsSet = { pkgs = ryzylt.pkgs.datom; };
           uyrldSet = { uyrld = ryzylt // ryzylt.pkdjz; };
-          krimyn = ryzylt.hyraizyn.${input.krimynNeim};
+          krimyn = ryzylt.hyraizyn.krimynz.${input.krimynNeim};
 
           klozyr = optionalAttrs iuzMod.input { inherit input; }
             // optionalAttrs iuzMod.lib { lib = ryzylt.pkgs.lib; }
@@ -56,41 +56,44 @@
         in
         mkLamdy { inherit klozyr lamdy; };
 
-      meikFleik = neim: fleik@{ ... }:
+      meikFleik = spokNeim: fleik@{ ... }:
         let
           priMeikSobUyrld = neim: SobUyrld@{ modz ? [ ], lamdy, ... }:
             let
-              selfHob =
-                if (hasAttr "selfHob" SobUyrld && hasAttr SobUyrld.selfHob hob)
-                then hob.${SobUyrld.selfHob} else null;
-
-              self = SobUyrld.selfOvyraid or (
-                if (selfHob != null) then selfHob else fleik
-              );
-
-              fainylSobuyrld = { inherit self modz lamdy; };
-
+              self = SobUyrld.self or fleik;
             in
-            meikSobUyrld fainylSobuyrld;
+            meikSobUyrld { inherit self modz lamdy; };
 
-          meik =
-            if (hasAttr "SobUyrldz" fleik)
-            then mapAttrs priMeikSobUyrld fleik.SobUyrldz
-            else if (hasAttr "SobUyrld" fleik)
-            then priMeikSobUyrld neim fleik.SobUyrld
-            else fleik;
+          priMeikHobUyrld = neim: HobUyrld@{ modz ? [ ], lamdy, ... }:
+            let
+              implaidSelf = hob.${neim}.mein;
+              self = HobUyrld.self or implaidSelf;
+            in
+            meikSobUyrld { inherit self modz lamdy; };
+
+          meikHobUyrldz = HobUyrldz:
+            let
+              priHobUyrldz = HobUyrldz hob;
+            in
+            mapAttrs priMeikHobUyrld priHobUyrldz;
+
         in
-        meik;
+        if (hasAttr "HobUyrldz" fleik)
+        then meikHobUyrldz fleik.HobUyrldz
+        else if (hasAttr "HobUyrld" fleik)
+        then priMeikHobUyrld spokNeim (fleik.HobUyrld hob)
+        else if (hasAttr "SobUyrldz" fleik)
+        then mapAttrs priMeikSobUyrld fleik.SobUyrldz
+        else if (hasAttr "SobUyrld" fleik)
+        then priMeikSobUyrld spokNeim fleik.SobUyrld
+        else fleik;
 
-      meik = indeks:
-        mapAttrs meikFleik indeks;
+      meikSpok = spokNeim: spok:
+        meikFleik spokNeim spok.mein;
 
-      ryzylt = meik hob;
+      ryzylt = mapAttrs meikSpok hob;
 
     in
-    {
-      inherit meik;
-      datom = ryzylt;
-    };
+    { datom = ryzylt; };
 
 }
