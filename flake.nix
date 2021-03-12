@@ -10,6 +10,10 @@
       inherit (builtins) hasAttr mapAttrs;
       kor = registry.kor.datom;
 
+      pkdjz = uyrld.pkdjz;
+      pkgs = pkdjz.meikPkgs { };
+      krimyn = uyrld.hyraizyn.krimynz.${input.krimynNeim};
+
       meikSobUyrld = SobUyrld@{ lamdy, modz, self }:
         let
           inherit (builtins) getAttr elem;
@@ -20,36 +24,29 @@
             "lib"
             "pkgs"
             "pkgsSet"
-            "meikPkgs"
-            "mozPkgs"
             "hob"
             "pkdjz"
+            "uyrld"
+            "uyrldSet"
             "metastriz"
             "hyraizyn"
             "krimyn"
-            "uyrld"
-            "uyrldSet"
           ];
 
           iuzMod = genAttrs Modz (n: (elem n modz));
 
-          pkgsSet = { pkgs = ryzylt.pkgs.datom; };
-          uyrldSet = { uyrld = ryzylt // ryzylt.pkdjz; };
-          krimyn = ryzylt.hyraizyn.krimynz.${input.krimynNeim};
-
-          klozyr = optionalAttrs iuzMod.input { inherit input; }
-            // optionalAttrs iuzMod.lib { lib = ryzylt.pkgs.lib; }
-            // optionalAttrs iuzMod.pkgs ryzylt.pkgs.datom
-            // optionalAttrs iuzMod.pkdjz ryzylt.pkdjz
-            // optionalAttrs iuzMod.pkgsSet pkgsSet
-            // optionalAttrs iuzMod.meikPkgs { meikPkgs = ryzylt.pkgs.meik; }
-            // optionalAttrs iuzMod.mozPkgs ryzylt.mozPkgs
+          /* Warning: sets shadowing */
+          klozyr = optionalAttrs iuzMod.pkgs pkgs
+            // optionalAttrs iuzMod.uyrld uyrld
+            // optionalAttrs iuzMod.pkdjz pkdjz
+            // optionalAttrs iuzMod.input { inherit input; }
             // optionalAttrs iuzMod.hob { inherit hob; }
-            // optionalAttrs iuzMod.metastriz { metastriz = ryzylt.metastriz; }
-            // optionalAttrs iuzMod.hyraizyn { inherit (ryzylt) hyraizyn; }
+            // optionalAttrs iuzMod.lib { inherit (pkdjz) lib; }
+            // optionalAttrs iuzMod.pkgsSet { inherit pkgs; }
+            // optionalAttrs iuzMod.uyrldSet { inherit uyrld; }
+            // optionalAttrs iuzMod.metastriz { inherit (uyrld) metastriz; }
+            // optionalAttrs iuzMod.hyraizyn { inherit (uyrld) hyraizyn; }
             // optionalAttrs iuzMod.krimyn { inherit krimyn; }
-            // optionalAttrs iuzMod.uyrld (ryzylt // ryzylt.pkdjz)
-            // optionalAttrs iuzMod.uyrldSet uyrldSet
             // { inherit kor; }
             // { inherit self; };
 
@@ -91,9 +88,9 @@
       meikSpok = spokNeim: spok:
         meikFleik spokNeim spok.mein;
 
-      ryzylt = mapAttrs meikSpok hob;
+      uyrld = mapAttrs meikSpok hob;
 
     in
-    { datom = ryzylt; };
+    { datom = uyrld // { inherit pkgs; }; };
 
 }
