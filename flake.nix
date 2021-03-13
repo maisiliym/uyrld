@@ -7,12 +7,18 @@
       hob = registry.hob.datom;
       input = registry.input.datom;
 
-      inherit (builtins) hasAttr mapAttrs;
       kor = registry.kor.datom;
+      inherit (builtins) hasAttr mapAttrs;
+      inherit (kor) arkSistymMap;
 
-      pkdjz = uyrld.pkdjz;
+      inherit (uyrld) metastriz hyraizyn pkdjz;
       pkgs = pkdjz.meikPkgs { };
-      krimyn = uyrld.hyraizyn.krimynz.${input.krimynNeim};
+      krimyn = hyraizyn.krimynz.${input.tyrget.krimynNeim};
+
+      sistymz = {
+        localSystem = { system = arkSistymMap.${input.mycinArk}; };
+        crossSystem = { system = hyraizyn.astra.sistym; };
+      };
 
       meikSobUyrld = SobUyrld@{ lamdy, modz, self }:
         let
@@ -21,6 +27,7 @@
 
           Modz = [
             "input"
+            "sistymz"
             "lib"
             "pkgs"
             "pkgsSet"
@@ -40,12 +47,13 @@
             // optionalAttrs iuzMod.uyrld uyrld
             // optionalAttrs iuzMod.pkdjz pkdjz
             // optionalAttrs iuzMod.input { inherit input; }
+            // optionalAttrs iuzMod.sistymz { inherit sistymz; }
             // optionalAttrs iuzMod.hob { inherit hob; }
             // optionalAttrs iuzMod.lib { inherit (pkdjz) lib; }
             // optionalAttrs iuzMod.pkgsSet { inherit pkgs; }
             // optionalAttrs iuzMod.uyrldSet { inherit uyrld; }
-            // optionalAttrs iuzMod.metastriz { inherit (uyrld) metastriz; }
-            // optionalAttrs iuzMod.hyraizyn { inherit (uyrld) hyraizyn; }
+            // optionalAttrs iuzMod.metastriz { inherit metastriz; }
+            // optionalAttrs iuzMod.hyraizyn { inherit hyraizyn; }
             // optionalAttrs iuzMod.krimyn { inherit krimyn; }
             // { inherit kor; }
             // { inherit self; };
